@@ -1,14 +1,11 @@
 <template>
     <div class="manage">
         <el-tabs type="border-card">
-            <el-tab-pane label="评论管理" :disabled="hasPermission(permission.COMMENTER)">
-                评论管理
-            </el-tab-pane>
             <el-tab-pane label="帖子管理" :disabled="hasPermission(permission.POSTER)">
-                帖子管理
+                <manage-article></manage-article>
             </el-tab-pane>
             <el-tab-pane label="前端用户管理" :disabled="hasPermission(permission.FRONTUSER)">
-                前端用户管理
+                <manage-front-user></manage-front-user>
             </el-tab-pane>
             <el-tab-pane label="板块管理" :disabled="hasPermission(permission.BOADER)">
                 <manage-board></manage-board>
@@ -27,12 +24,16 @@
     import { permission } from '@/common/cnst.js'
     import Board from '@/components/manage/Board.vue'
     import Operator from '@/components/manage/Operator.vue'
+    import FrontUser from '@/components/manage/FrontUser.vue'
+    import Article from '@/components/manage/Article.vue'
     
     export default {
         name: 'Manage',
         components: {
             'manage-board': Board,
-            'manage-operator': Operator
+            'manage-operator': Operator,
+            'manage-front-user': FrontUser,
+            'manage-article': Article
         },
         data() {
             return {

@@ -34,6 +34,22 @@ let get = function(url, data) {
 }
 
 // 视图专用函数
+export function get_article(data) {
+    return get('/cms/manage/article/', data)
+}
+
+export function post_article(data) {
+    return post('/cms/manage/article/', data)
+}
+
+export function get_front_user(data) {
+    return get('/cms/manage/front_user/', data)
+}
+
+export function post_front_user(data) {
+    return post('/cms/manage/front_user/', data)
+}
+
 export function get_operator(data) {
     return get('/cms/manage/operator/', data)
 }

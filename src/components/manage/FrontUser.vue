@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-button class="add-board" type="primary" plain @click="addOperatorHandler">添加运营</el-button>
+        <el-button class="add-board" type="danger" plain @click="addBlockUser">封禁用户</el-button>
         
         <el-table border :data="users" :height="620">
             <el-table-column type="index" :index="indexMethod" label="序号" width="50" align="center"></el-table-column>
@@ -18,14 +18,8 @@
                               <el-image :src="scope.row.avatar" fit="fill"></el-image>
                           </el-col>
                       </el-row>
-                      
                       <el-button slot="reference" size="small">查看</el-button>
                     </el-popover>
-                </template>
-            </el-table-column>
-            <el-table-column prop="status" label="账号状态" width="80">
-                <template slot-scope="scope">
-                    {{ scope.row.status | statusFormatter }}
                 </template>
             </el-table-column>
             <el-table-column prop="created" label="创建时间" width="130">
@@ -35,7 +29,7 @@
             </el-table-column>
             <el-table-column label="操作" width="95">
                 <template slot-scope="scope">
-                    <el-button type="danger" icon="el-icon-delete" size="small" @click="deleteOperator(scope.row, scope.$index)">删除</el-button>
+                    <el-button type="danger" icon="el-icon-delete" size="small" @click="blockUserHandler(scope.row, scope.$index)">封禁</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -46,15 +40,15 @@
 </template>
 
 <script>
-import { get_operator, post_operator } from '@/network/functions.js'
+import { get_front_user, post_front_user } from '@/network/functions.js'
 import { stampFormatter } from '@/common/utils.js'
 import Pagenator from '@/components/common/pagenator.vue'
 
 export default {
-    name: "Operator",
+    name: "FrontUser",
     updated() {
         if (!this.inited) {
-            this.$refs.pagenator.initPagenator(get_operator, {})
+            this.$refs.pagenator.initPagenator(get_front_user, {})
             this.inited = true
         }
     },
@@ -75,19 +69,19 @@ export default {
         indexMethod(index) {
             return (this.curPage - 1) * this.size + index + 1
         },
-        addOperatorHandler() {
+        addBlockUser() {
             this.$prompt('请输入用户id', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 inputPattern: /^[0-9a-zA-Z]{22}$/,
                 inputErrorMessage: '用户id格式不正确'
             }).then(({ value }) => {
-                post_operator({
+                post_front_user({
                     mode: "add",
                     uid: value
                 }).then(() => {
                     this.$message({
-                        message: '添加用户成功',
+                        message: '封禁用户成功，请到小黑屋中查看',
                         type: 'success'
                     });
                     this.$refs.pagenator.commitData()
@@ -96,34 +90,31 @@ export default {
                 })
             }).catch(() => {});
         },
-        deleteOperator(item) {
-            this.$confirm('是否删除该用户的管理权限？', '提示', {
-                    confirmButtonText: '干他',
-                    cancelButtonText: '我手滑了',
-                    type: 'warning'
+        blockUserHandler(item) {
+            this.$confirm('是否封禁该用户？', '提示', {
+                confirmButtonText: '干他',
+                cancelButtonText: '我手滑了',
+                type: 'warning'
+            }).then(() => {
+                post_front_user({
+                    uid: item.uid,
+                    mode: "add"
                 }).then(() => {
-                    post_operator({
-                        uid: item.uid,
-                        mode: "sub"
-                    }).then(() => {
-                        this.$message({
-                            message: '删除成功',
-                            type: 'success'
-                        });
-                        this.$refs.pagenator.commitData()
-                    }).catch(err => {
-                        this.$message.error(err.message);
-                    })
-                }).catch(() => {})
+                    this.$message({
+                        message: '封禁用户成功，请到小黑屋中查看',
+                        type: 'success'
+                    });
+                    this.$refs.pagenator.commitData()
+                }).catch(err => {
+                    this.$message.error(err.message);
+                })
+            }).catch(() => {})
         }
     },
     filters: {
         timeFormatter(value) {
             return stampFormatter(value, "Y年m月d日")
         },
-        statusFormatter(value) {
-            return value == 1 ? '正常':'封禁中'
-        }
     }
 }
 </script>

@@ -9,8 +9,8 @@ export default function axios(options) {
     return new Promise((resolve, reject) => {
         const instance = originAxios.create({
             // baseURL: 'https://www.buptwecode.com',
-            baseURL: 'https://test.buptwecode.com',
-            // baseURL: "http://localhost:5000",
+            // baseURL: 'https://test.buptwecode.com',
+            baseURL: "http://localhost:5000",
             timeout: 60000,
             xhrFields: {                        
                 withCredentials: true                    
