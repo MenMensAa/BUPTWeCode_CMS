@@ -34,6 +34,22 @@ let get = function(url, data) {
 }
 
 // 视图专用函数
+export function get_feedback(data) {
+    return get('/cms/block/feedback/', data)
+}
+
+export function get_report(data) {
+    return post('/cms/block/report/', data)
+}
+
+export function get_cms_user(data) {
+    return get('/cms/manage/cms_user/', data)
+}
+
+export function post_cms_user(data) {
+    return post('/cms/manage/cms_user/', data)
+}
+
 export function get_article(data) {
     return get('/cms/manage/article/', data)
 }

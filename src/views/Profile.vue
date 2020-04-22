@@ -17,7 +17,7 @@
                         <el-row>
                             <el-col :span="12">
                                 <el-form-item label="当前权限">
-                                    <el-input :placeholder="permission" :disabled="true"></el-input>
+                                    <el-input :placeholder="roleName" :disabled="true"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="12">
@@ -124,8 +124,8 @@
             userInfo() {
                 return this.$store.getters.userInfo
             },
-            permission() {
-                return this.$store.getters.permission
+            roleName() {
+                return this.$store.getters.roleName
             },
             created() {
                 return stampFormatter(this.userInfo.created, "Y年m月d日 H时i分s秒")

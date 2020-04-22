@@ -96,7 +96,7 @@
                     if (valid) {
                         this.$alert('登陆成功!', '提示', {
                             confirmButtonText: '哦(冷漠)',
-                        })
+                        }).then(() => {}).catch(() => {})
                     }
                     this.buttonLoading = false
                 })

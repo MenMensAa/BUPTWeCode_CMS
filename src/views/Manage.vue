@@ -1,5 +1,5 @@
 <template>
-    <div class="manage">
+    <div>
         <el-tabs type="border-card">
             <el-tab-pane label="帖子管理" :disabled="hasPermission(permission.POSTER)">
                 <manage-article></manage-article>
@@ -14,7 +14,7 @@
                 <manage-operator></manage-operator>
             </el-tab-pane>
             <el-tab-pane label="CMS用户管理" :disabled="hasPermission(permission.ROOTER)">
-                CMS用户管理
+                <manage-cms-user></manage-cms-user>
             </el-tab-pane>
         </el-tabs>
     </div>
@@ -26,6 +26,7 @@
     import Operator from '@/components/manage/Operator.vue'
     import FrontUser from '@/components/manage/FrontUser.vue'
     import Article from '@/components/manage/Article.vue'
+    import CMSUser from '@/components/manage/CMSUser.vue'
     
     export default {
         name: 'Manage',
@@ -33,7 +34,8 @@
             'manage-board': Board,
             'manage-operator': Operator,
             'manage-front-user': FrontUser,
-            'manage-article': Article
+            'manage-article': Article,
+            'manage-cms-user': CMSUser
         },
         data() {
             return {
