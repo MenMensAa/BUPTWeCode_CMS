@@ -46,88 +46,93 @@
 </template>
 
 <script>
-import { get_operator, post_operator } from '@/network/functions.js'
-import { stampFormatter } from '@/common/utils.js'
-import Pagenator from '@/components/common/pagenator.vue'
+    import { get_operator, post_operator } from '@/network/functions.js'
+    import { stampFormatter } from '@/common/utils.js'
+    import Pagenator from '@/components/common/pagenator.vue'
 
-export default {
-    name: "Operator",
-    updated() {
-        if (!this.inited) {
-            this.$refs.pagenator.initPagenator(get_operator, {})
-            this.inited = true
-        }
-    },
-    data() {
-        return {
-            inited: false,
-            size: 10,
-            curPage: 0,
+    export default {
+        name: "Operator",
+        updated() {
+            if (!this.inited) {
+                this.$refs.pagenator.initPagenator(get_operator, {})
+                this.inited = true
+            }
+        },
+        data() {
+            return {
+                inited: false,
+                size: 10,
+                curPage: 0,
 
-            users: []
-        }
-    },
-    methods: {
-        pageChangeHandler(val, page) {
-            this.users = val
-            this.curPage = page
+                users: []
+            }
         },
-        indexMethod(index) {
-            return (this.curPage - 1) * this.size + index + 1
-        },
-        addOperatorHandler() {
-            this.$prompt('请输入用户id', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                inputPattern: /^[0-9a-zA-Z]{22}$/,
-                inputErrorMessage: '用户id格式不正确'
-            }).then(({ value }) => {
-                post_operator({
-                    mode: "add",
-                    uid: value
-                }).then(() => {
-                    this.$message({
-                        message: '添加用户成功',
-                        type: 'success'
-                    });
-                    this.$refs.pagenator.commitData()
-                }).catch(err => {
-                    this.$message.error(err.message);
-                })
-            }).catch(() => {});
-        },
-        deleteOperator(item) {
-            this.$confirm('是否删除该用户的管理权限？', '提示', {
-                    confirmButtonText: '干他',
-                    cancelButtonText: '我手滑了',
-                    type: 'warning'
-                }).then(() => {
+        methods: {
+            pageChangeHandler(val, page) {
+                this.users = val
+                this.curPage = page
+            },
+            indexMethod(index) {
+                return (this.curPage - 1) * this.size + index + 1
+            },
+            addOperatorHandler() {
+                this.$prompt('请输入用户id', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    inputPattern: /^[0-9a-zA-Z]{22}$/,
+                    inputErrorMessage: '用户id格式不正确'
+                }).then(({ value }) => {
                     post_operator({
-                        uid: item.uid,
-                        mode: "sub"
+                        mode: "add",
+                        uid: value
                     }).then(() => {
                         this.$message({
-                            message: '删除成功',
+                            message: '添加用户成功',
                             type: 'success'
                         });
                         this.$refs.pagenator.commitData()
                     }).catch(err => {
                         this.$message.error(err.message);
                     })
-                }).catch(() => {})
-        }
-    },
-    filters: {
-        timeFormatter(value) {
-            return stampFormatter(value, "Y年m月d日")
+                }).catch(() => {});
+            },
+            deleteOperator(item) {
+                this.$confirm('是否删除该用户的管理权限？', '提示', {
+                        confirmButtonText: '干他',
+                        cancelButtonText: '我手滑了',
+                        type: 'warning'
+                    }).then(() => {
+                        post_operator({
+                            uid: item.uid,
+                            mode: "sub"
+                        }).then(() => {
+                            this.$message({
+                                message: '删除成功',
+                                type: 'success'
+                            });
+                            this.$refs.pagenator.commitData()
+                        }).catch(err => {
+                            this.$message.error(err.message);
+                        })
+                    }).catch(() => {})
+            }
         },
-        statusFormatter(value) {
-            return value == 1 ? '正常':'封禁中'
+        filters: {
+            timeFormatter(value) {
+                return stampFormatter(value, "Y年m月d日")
+            },
+            statusFormatter(value) {
+                return value == 1 ? '正常':'封禁中'
+            }
         }
     }
-}
 </script>
 
 <style>
-
+.add-board {
+    margin-bottom: 10px;
+}
+.popconfirm-button {
+    margin-right: 10px;
+}
 </style>

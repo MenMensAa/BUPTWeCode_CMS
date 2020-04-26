@@ -7,15 +7,6 @@ Vue.use(VueRouter)
 
 const routes = [
     {
-        path: '/',
-        name: 'home',
-        component: Home,
-        meta: {
-            title: '首页',
-            loginRequired: true
-        }
-    },
-    {
         path: '/manage',
         name: 'manage',
         component: () => import('@/views/Manage.vue'),
@@ -34,23 +25,11 @@ const routes = [
         }
     },
     {
-        path: '/profile',
-        name: 'profile',
+        path: '/',
+        name: 'home',
         component: () => import('@/views/Profile.vue'),
         meta: {
-            title: '个人资料',
-            loginRequired: true
-        }
-    },
-    {
-        path: '/about',
-        name: 'about',
-        // route level code-splitting
-        // this generates a separate chunk (about.[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "about" */ '../views/About.vue'),
-        meta: {
-            title: '关于',
+            title: '我的',
             loginRequired: true
         }
     },

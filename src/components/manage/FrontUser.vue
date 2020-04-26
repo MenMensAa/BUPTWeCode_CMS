@@ -40,85 +40,90 @@
 </template>
 
 <script>
-import { get_front_user, post_front_user } from '@/network/functions.js'
-import { stampFormatter } from '@/common/utils.js'
-import Pagenator from '@/components/common/pagenator.vue'
+    import { get_front_user, post_front_user } from '@/network/functions.js'
+    import { stampFormatter } from '@/common/utils.js'
+    import Pagenator from '@/components/common/pagenator.vue'
 
-export default {
-    name: "FrontUser",
-    updated() {
-        if (!this.inited) {
-            this.$refs.pagenator.initPagenator(get_front_user, {})
-            this.inited = true
-        }
-    },
-    data() {
-        return {
-            inited: false,
-            size: 10,
-            curPage: 0,
+    export default {
+        name: "FrontUser",
+        updated() {
+            if (!this.inited) {
+                this.$refs.pagenator.initPagenator(get_front_user, {})
+                this.inited = true
+            }
+        },
+        data() {
+            return {
+                inited: false,
+                size: 10,
+                curPage: 0,
 
-            users: []
-        }
-    },
-    methods: {
-        pageChangeHandler(val, page) {
-            this.users = val
-            this.curPage = page
+                users: []
+            }
         },
-        indexMethod(index) {
-            return (this.curPage - 1) * this.size + index + 1
-        },
-        addBlockUser() {
-            this.$prompt('请输入用户id', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                inputPattern: /^[0-9a-zA-Z]{22}$/,
-                inputErrorMessage: '用户id格式不正确'
-            }).then(({ value }) => {
-                post_front_user({
-                    mode: "add",
-                    uid: value
+        methods: {
+            pageChangeHandler(val, page) {
+                this.users = val
+                this.curPage = page
+            },
+            indexMethod(index) {
+                return (this.curPage - 1) * this.size + index + 1
+            },
+            addBlockUser() {
+                this.$prompt('请输入用户id', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    inputPattern: /^[0-9a-zA-Z]{22}$/,
+                    inputErrorMessage: '用户id格式不正确'
+                }).then(({ value }) => {
+                    post_front_user({
+                        mode: "add",
+                        uid: value
+                    }).then(() => {
+                        this.$message({
+                            message: '封禁用户成功，请到小黑屋中查看',
+                            type: 'success'
+                        });
+                        this.$refs.pagenator.commitData()
+                    }).catch(err => {
+                        this.$message.error(err.message);
+                    })
+                }).catch(() => {});
+            },
+            blockUserHandler(item) {
+                this.$confirm('是否封禁该用户？', '提示', {
+                    confirmButtonText: '干他',
+                    cancelButtonText: '我手滑了',
+                    type: 'warning'
                 }).then(() => {
-                    this.$message({
-                        message: '封禁用户成功，请到小黑屋中查看',
-                        type: 'success'
-                    });
-                    this.$refs.pagenator.commitData()
-                }).catch(err => {
-                    this.$message.error(err.message);
-                })
-            }).catch(() => {});
+                    post_front_user({
+                        uid: item.uid,
+                        mode: "add"
+                    }).then(() => {
+                        this.$message({
+                            message: '封禁用户成功，请到小黑屋中查看',
+                            type: 'success'
+                        });
+                        this.$refs.pagenator.commitData()
+                    }).catch(err => {
+                        this.$message.error(err.message);
+                    })
+                }).catch(() => {})
+            }
         },
-        blockUserHandler(item) {
-            this.$confirm('是否封禁该用户？', '提示', {
-                confirmButtonText: '干他',
-                cancelButtonText: '我手滑了',
-                type: 'warning'
-            }).then(() => {
-                post_front_user({
-                    uid: item.uid,
-                    mode: "add"
-                }).then(() => {
-                    this.$message({
-                        message: '封禁用户成功，请到小黑屋中查看',
-                        type: 'success'
-                    });
-                    this.$refs.pagenator.commitData()
-                }).catch(err => {
-                    this.$message.error(err.message);
-                })
-            }).catch(() => {})
+        filters: {
+            timeFormatter(value) {
+                return stampFormatter(value, "Y年m月d日")
+            },
         }
-    },
-    filters: {
-        timeFormatter(value) {
-            return stampFormatter(value, "Y年m月d日")
-        },
     }
-}
 </script>
 
 <style>
-
+.add-board {
+    margin-bottom: 10px;
+}
+.popconfirm-button {
+    margin-right: 10px;
+}
 </style>

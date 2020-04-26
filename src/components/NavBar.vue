@@ -4,7 +4,7 @@
             <el-menu-item index="/">
                 <template slot="title">
                     <i class="el-icon-house"></i>
-                    <span>首页</span>
+                    <span>我的</span>
                 </template>
             </el-menu-item>
             <el-menu-item index="/manage">
@@ -19,23 +19,11 @@
                     <span>小黑屋</span>
                 </template>
             </el-menu-item>
-            <el-menu-item index="/about">
-                <template slot="title">
-                    <i class="el-icon-paperclip"></i>
-                    <span>关于</span>
-                </template>
-            </el-menu-item>
             <el-submenu index="/me">
                 <template slot="title">
                     <i class="el-icon-user"></i>
                     <span>{{userName}}</span>
                 </template>
-                <el-menu-item index="/profile">
-                    <template slot="title">
-                        <i class="el-icon-user"></i>
-                        <span>我的资料</span>
-                    </template>
-                </el-menu-item>
                 <el-menu-item @click="signOutBtnHandler">
                     <template slot="title">
                         <i class="el-icon-switch-button"></i>

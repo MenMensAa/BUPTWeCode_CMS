@@ -45,97 +45,102 @@
 </template>
 
 <script>
-import { get_cms_user, post_cms_user } from '@/network/functions.js'
-import { stampFormatter } from '@/common/utils.js'
-import Pagenator from '@/components/common/pagenator.vue'
+    import { get_cms_user, post_cms_user } from '@/network/functions.js'
+    import { stampFormatter } from '@/common/utils.js'
+    import Pagenator from '@/components/common/pagenator.vue'
 
-export default {
-    name: "FrontUser",
-    updated() {
-        if (!this.inited) {
-            this.$refs.pagenator.initPagenator(get_cms_user, {})
-            this.inited = true
-        }
-    },
-    data() {
-        return {
-            inited: false,
-            dialogVisible: false,
-            size: 10,
-            curPage: 0,
+    export default {
+        name: "FrontUser",
+        updated() {
+            if (!this.inited) {
+                this.$refs.pagenator.initPagenator(get_cms_user, {})
+                this.inited = true
+            }
+        },
+        data() {
+            return {
+                inited: false,
+                dialogVisible: false,
+                size: 10,
+                curPage: 0,
 
-            dialogForm: {
-                uid: "",
-                role: "VISITOR"
+                dialogForm: {
+                    uid: "",
+                    role: "VISITOR"
+                },
+
+                users: [],
+                selectUserIndex: 0
+            }
+        },
+        methods: {
+            pageChangeHandler(val, page) {
+                this.users = val
+                this.curPage = page
             },
-
-            users: [],
-            selectUserIndex: 0
-        }
-    },
-    methods: {
-        pageChangeHandler(val, page) {
-            this.users = val
-            this.curPage = page
-        },
-        indexMethod(index) {
-            return (this.curPage - 1) * this.size + index + 1
-        },
-        changeUserRole(item, index) {
-            this.dialogForm = {
-                uid: item.uid,
-                role: item.role
-            }
-            this.selectUserIndex = index
-            this.dialogVisible = true
-        },
-        commitBtnClick() {
-            this.dialogVisible = false
-            if (this.users[this.selectUserIndex].role != this.dialogForm.role) {
-                post_cms_user(this.dialogForm).then(() => {
+            indexMethod(index) {
+                return (this.curPage - 1) * this.size + index + 1
+            },
+            changeUserRole(item, index) {
+                this.dialogForm = {
+                    uid: item.uid,
+                    role: item.role
+                }
+                this.selectUserIndex = index
+                this.dialogVisible = true
+            },
+            commitBtnClick() {
+                this.dialogVisible = false
+                if (this.users[this.selectUserIndex].role != this.dialogForm.role) {
+                    post_cms_user(this.dialogForm).then(() => {
+                        this.$message({
+                            message: '修改成功',
+                            type: 'success'
+                        });
+                        this.users[this.selectUserIndex].role = this.dialogForm.role
+                    }).catch(err => {
+                        this.$message.error(err.message)
+                    })
+                } else {
                     this.$message({
-                        message: '修改成功',
-                        type: 'success'
-                    });
-                    this.users[this.selectUserIndex].role = this.dialogForm.role
-                }).catch(err => {
-                    this.$message.error(err.message)
-                })
-            } else {
-                this.$message({
-                    message: '未修改'
-                })
+                        message: '未修改'
+                    })
+                }
             }
-        }
-    },
-    filters: {
-        timeFormatter(value) {
-            return stampFormatter(value, "Y年m月d日")
         },
-        roleFormatter(value) {
-            let res = "游客"
-            switch (value) {
-                case "VISITOR":
-                    res = "游客"
-                    break
-                case "OPERATOR":
-                    res = "运营"
-                    break
-                case "ADMIN":
-                    res = "管理员"
-                    break
-                case "DEVELOPER":
-                    res = "开发者"
-                    break
-                default:
-                    res = "游客"
+        filters: {
+            timeFormatter(value) {
+                return stampFormatter(value, "Y年m月d日")
+            },
+            roleFormatter(value) {
+                let res = "游客"
+                switch (value) {
+                    case "VISITOR":
+                        res = "游客"
+                        break
+                    case "OPERATOR":
+                        res = "运营"
+                        break
+                    case "ADMIN":
+                        res = "管理员"
+                        break
+                    case "DEVELOPER":
+                        res = "开发者"
+                        break
+                    default:
+                        res = "游客"
+                }
+                return res
             }
-            return res
         }
     }
-}
 </script>
 
 <style>
-
+.add-board {
+    margin-bottom: 10px;
+}
+.popconfirm-button {
+    margin-right: 10px;
+}
 </style>

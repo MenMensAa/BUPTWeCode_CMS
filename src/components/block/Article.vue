@@ -139,5 +139,10 @@ export default {
 </script>
 
 <style>
-
+.add-board {
+    margin-bottom: 10px;
+}
+.popconfirm-button {
+    margin-right: 10px;
+}
 </style>

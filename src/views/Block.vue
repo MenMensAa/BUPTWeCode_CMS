@@ -8,12 +8,13 @@
                 <block-front-user></block-front-user>
             </el-tab-pane>
             <el-tab-pane label="举报信息"  :disabled="hasPermission(permission.FRONTUSER)">
-                举报信息
+                <block-report @modal="showModal"></block-report>
             </el-tab-pane>
             <el-tab-pane label="用户反馈" :disabled="hasPermission(permission.FRONTUSER)">
-                <block-feedback></block-feedback>
+                <block-feedback @modal="showModal"></block-feedback>
             </el-tab-pane>
         </el-tabs>
+        <my-modal ref="modal"></my-modal>
     </div>
 </template>
 
@@ -22,13 +23,17 @@
     import Article from '@/components/block/Article.vue'
     import FrontUser from '@/components/block/FrontUser.vue'
     import Feedback from '@/components/block/Feedback.vue'
+    import Report from '@/components/block/Report.vue'
+    import Modal from '@/components/common/modal.vue'
     
     export default {
         name: 'Manage',
         components: {
             'block-article': Article,
             'block-front-user': FrontUser,
-            "block-feedback": Feedback
+            'block-feedback': Feedback,
+            'block-report': Report,
+            'my-modal': Modal
         },
         data() {
             return {
@@ -38,6 +43,10 @@
         methods: {
             hasPermission(perm) {
                 return !(perm == (this.$store.getters.permission & perm))
+            },
+            showModal(item_data) {
+                console.log(item_data)
+                this.$refs.modal.showModal(item_data)
             }
         }
     }

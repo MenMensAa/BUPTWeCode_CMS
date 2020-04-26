@@ -34,12 +34,28 @@ let get = function(url, data) {
 }
 
 // 视图专用函数
+export function get_common_query(data) {
+    return get('/cms/common/query/', data)
+}
+
+export function get_common_put(data) {
+    return get('/cms/common/put/', data)
+}
+
+export function get_report(data) {
+    return get('/cms/block/report/', data)
+}
+
+export function post_report(data) {
+    return post('/cms/block/report/', data)
+}
+
 export function get_feedback(data) {
     return get('/cms/block/feedback/', data)
 }
 
-export function get_report(data) {
-    return post('/cms/block/report/', data)
+export function post_feedback(data) {
+    return post('/cms/block/feedback/', data)
 }
 
 export function get_cms_user(data) {

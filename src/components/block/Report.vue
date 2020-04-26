@@ -1,18 +1,23 @@
 <template>
     <div>
-        <el-table border :data="feedbacks" :height="620">
+        <el-table border :data="reports" :height="620">
             <el-table-column type="index" :index="indexMethod" label="序号" width="50" align="center"></el-table-column>
             <el-table-column label="反馈者" width="200">
                 <template slot-scope="scope">
-                    {{scope.row.user.username}}
+                    {{scope.row.reporter.username}}
                 </template>
             </el-table-column>
             <el-table-column label="用户id" width="220">
                 <template slot-scope="scope">
-                    {{scope.row.user.user_id}}
+                    {{scope.row.reporter.uid}}
                 </template>
             </el-table-column>
-            <el-table-column prop="email" label="邮箱"></el-table-column>
+            <el-table-column label="举报类型" width="95">
+                <template slot-scope="scope">
+                    {{ scope.row.category | categoryFormatter }}
+                </template>
+            </el-table-column>
+            <el-table-column prop="reason" label="举报理由"></el-table-column>
             <el-table-column label="用户头像" width="80">
                 <template slot-scope="scope">
                     <el-popover
@@ -21,7 +26,7 @@
                       trigger="click">
                       <el-row type="flex" justify="center">
                           <el-col :span="12">
-                              <el-image :src="scope.row.user.avatar" fit="fill"></el-image>
+                              <el-image :src="scope.row.reporter.avatar" fit="fill"></el-image>
                           </el-col>
                       </el-row>
                       <el-button slot="reference" size="small">查看</el-button>
@@ -30,13 +35,7 @@
             </el-table-column>
             <el-table-column label="反馈内容" width="80">
                 <template slot-scope="scope">
-                    <el-popover
-                      placement="top"
-                      width="150"
-                      trigger="click">
-                      {{scope.row.content}}
-                      <el-button slot="reference" size="small">查看</el-button>
-                    </el-popover>
+                    <el-button slot="reference" size="small" @click="viewReport(scope.row)">查看</el-button>
                 </template>
             </el-table-column>
             <el-table-column prop="created" label="创建时间" width="130">
@@ -51,27 +50,27 @@
             </el-table-column>
             <el-table-column label="操作" width="95">
                 <template slot-scope="scope">
-                    <el-button type="primary" icon="el-icon-plus" size="small" 
-                                @click="replyFeedback(scope.row)">回复</el-button>
+                    <el-button type="primary" size="small" 
+                                @click="replyFeedback(scope.row)">{{scope.row.status == 0  ? '已标记':'未标记'}}</el-button>
                 </template>
             </el-table-column>
         </el-table>
         
         <my-pagenator ref="pagenator" :size="size" :background="true"
-                      dataName="feedbacks" @pageChange="pageChangeHandler"></my-pagenator>
+                      dataName="reports" @pageChange="pageChangeHandler"></my-pagenator>
     </div>
 </template>
 
 <script>
-    import { get_feedback, post_feedback } from '@/network/functions.js'
+    import { get_report, post_report } from '@/network/functions.js'
     import { stampFormatter } from '@/common/utils.js'
     import Pagenator from '@/components/common/pagenator.vue'
 
     export default {
-        name: "Feedback",
+        name: "Report",
         updated() {
             if (!this.inited) {
-                this.$refs.pagenator.initPagenator(get_feedback, {})
+                this.$refs.pagenator.initPagenator(get_report, {})
                 this.inited = true
             }
         },
@@ -81,42 +80,40 @@
                 size: 10,
                 curPage: 0,
 
-                feedbacks: [],
+                reports: [],
                 replyForm: {
-                    feedback_id: "",
+                    report_id: "",
                     content: ""
-                }
+                },
             }
         },
         methods: {
             pageChangeHandler(val, page) {
-                this.feedbacks = val
+                this.reports = val
                 this.curPage = page
             },
             indexMethod(index) {
                 return (this.curPage - 1) * this.size + index + 1
             },
-            replyFeedback(feedback) {
-                this.replyForm.feedback_id = feedback.feedback_id
-                this.$prompt('请输入回复内容', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                }).then(({ value }) => {
-                    if (value.length == 0) {
-                        this.$message("输入内容不能为空")
-                    } else {
-                        this.replyForm.content = value
-                        post_feedback(this.replyForm).then(() => {
-                            this.$message({
-                                message: '回复成功',
-                                type: 'success'
-                            });
-                            this.$refs.pagenator.commitData()
-                        }).catch(err => {
-                            this.$message.error(err.message);
-                        })
-                    }
-                }).catch(() => {});
+            viewReport(item) {
+                let item_data = {
+                    item_id: item.link_id,
+                    category: item.category
+                }
+                this.$emit("modal", item_data)
+            },
+            replyFeedback(report) {
+                post_report({
+                    report_id: report.report_id
+                }).then(() => {
+                    this.$message({
+                        type: "success",
+                        message: "标记成功"
+                    })
+                    report.status = 0
+                }).catch(err => {
+                    this.$message.error(err.message)
+                })
             },
         },
         filters: {
@@ -125,6 +122,26 @@
             },
             statusFormatter(value) {
                 return value == 0 ? "已处理":"未处理"
+            },
+            categoryFormatter(value) {
+                let res = "";
+                switch (value) {
+                    case "user":
+                        res = "用户举报"
+                        break
+                    case "article":
+                        res = "帖子举报"
+                        break
+                    case "comment":
+                        res = "评论举报"
+                        break
+                    case "sub_comment":
+                        res = "楼中楼举报"
+                        break
+                    default:
+                        res = "未知"
+                }
+                return res
             }
         }
     }
